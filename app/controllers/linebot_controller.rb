@@ -12,7 +12,7 @@ class LinebotController < ApplicationController
 
     signature = request.env['HTTP_X_LINE_SIGNATURE']
     unless client.validate_signature(body, signature)
-      error 400 do 'Bad Request' end
+      #error 400 do 'Bad Request' end
     end
 
     events = client.parse_events_from(body)
@@ -35,7 +35,7 @@ class LinebotController < ApplicationController
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
-              push = "#{@post.food}は#{@post.date}までだね！\n覚えたよ〜"
+              push = "#{food}は#{date}までだね！\n覚えたよ〜"
             else  
               push = "日付は〇〇/〇〇の形でいれてね！"
             end
@@ -76,8 +76,8 @@ class LinebotController < ApplicationController
   private
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+      config.channel_secret = "02aadf741bad2100c0a0ddd60698c986" #ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = "KT7aBBeegjq29U+SE++Lcc0kvTojFwlXNkC8KUdUD1EzuSnq4FHwiriNyXKInvQjIbqm0YFXMXY+xTGNqGGLw2YPwLg14vL9ipGq7xZ7Cy6viSrPdqPY9J1KHMO55FzNwPAv8y2rpKPNQWOLzb1/MwdB04t89/1O/w1cDnyilFU=" #ENV["LINE_CHANNEL_TOKEN"]
     }
   end
 

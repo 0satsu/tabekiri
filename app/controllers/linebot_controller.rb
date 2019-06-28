@@ -33,7 +33,7 @@ class LinebotController < ApplicationController
               line_id = event['source']['userId']
               user = User.find_by(line_id: line_id)
               dead_line2 = dead_line.split("/").map(&:to_i)
-              date = Date.new(2019,dead_line[0],dead_line[1])
+              date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
               push = "#{@post.food}は#{@post.date}までだね！\n覚えたよ〜"
             else  

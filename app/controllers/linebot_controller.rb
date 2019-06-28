@@ -29,18 +29,18 @@ class LinebotController < ApplicationController
           food = set_data[0]
           dead_line = set_data[1]
           if set_data.length == 2
-            if dead_line.match(/\d{2}\/\d{2}/) != nil
+            if dead_line.match(/\d{1,2}\/\d{1,2}/) != nil
               line_id = event['source']['userId']
               user = User.find_by(line_id: line_id)
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
-              push = "#{food}は#{date}までだね！\n覚えたよ〜"
+              push = "#{food}は#{date.strftime("%m/%d").gsub("0","")}までだね！\n覚えたよ〜"
             else  
-              push = "日付は〇〇/〇〇の形でいれてね！"
+              push = "日付は「〇/〇」の形でいれてね！"
             end
           else
-            push = "商品\n日付(mm/dd)\nと改行していれてね！\n日付は4桁だよ。"
+            push = "商品\n日付(〇〇/▲▲)\nと改行していれてね！"
           end
           # テキスト以外（画像等）のメッセージが送られた場合
         else

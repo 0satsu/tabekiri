@@ -30,6 +30,11 @@ class LinebotController < ApplicationController
           dead_line = set_data[1]
           if set_data.length == 2
             if dead_line.match(/\d{2}\/\d{2}/) != nil
+              line_id = event['source']['userId']
+              user = User.find_by(line_id: line_id)
+              dead_line2 = dead_line.split("/").map(&:to_i)
+              date = Date.new(2019,dead_line[0],dead_line[1])
+              Post.create(food: food, date: date, user_id: user.id)
               push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
             else  
               push = "日付は〇〇/〇〇の形でいれてね！"

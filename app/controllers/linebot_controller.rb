@@ -25,21 +25,13 @@ class LinebotController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           # event.message['text']：ユーザーから送られたメッセージ
           input = event.message['text']
-
-          case input
-            # 「明日」or「あした」というワードが含まれる場合
-          when /.*(明日|あした).*/
-            push = ""
-          when /.*(明後日|あさって).*/
-            push = ""
-          when /.*(かわいい|可愛い|カワイイ|きれい|綺麗|キレイ|素敵|ステキ|すてき|面白い|おもしろい|ありがと|すごい|スゴイ|スゴい|好き|頑張|がんば|ガンバ).*/
-            push =
-              "ありがとう！！！\n優しい言葉をかけてくれるあなたはとても素敵です(^^)"
-          when /.*(こんにちは|こんばんは|初めまして|はじめまして|おはよう).*/
-            push =
-              "こんにちは。\n声をかけてくれてありがとう\n今日があなたにとっていい日になりますように(^^)"
+          set_date = input.split("\n")
+          food = set_data[0]
+          dead_line = set_data[1]
+          if set_data.length == 2 && dead_line.match(/\d{2}\/\d{2}/ != nil)
+            push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
           else
-
+            push = "商品と日付(mm/dd)をいれてね！\n日付は4桁だよ。"
           end
           # テキスト以外（画像等）のメッセージが送られた場合
         else

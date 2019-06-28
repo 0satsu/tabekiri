@@ -28,10 +28,10 @@ class LinebotController < ApplicationController
           set_data = input.split(" ")
           food = set_data[0]
           dead_line = set_data[1]
-          if set_data.length == 2 && dead_line.match(/\d{2}\/\d{2}/ != nil)
+          if set_data.length == 2 
             push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
           else
-            push = "商品と日付(mm/dd)をいれてね！\n日付は4桁だよ。"
+            push = "商品\n日付(mm/dd)\nをいれてね！\n日付は4桁だよ。"
           end
           # テキスト以外（画像等）のメッセージが送られた場合
         else

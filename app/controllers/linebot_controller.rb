@@ -25,13 +25,17 @@ class LinebotController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           # event.message['text']：ユーザーから送られたメッセージ
           input = event.message['text']
-          set_data = input.split(" ")
+          set_data = input.split("\n")
           food = set_data[0]
           dead_line = set_data[1]
-          if set_data.length == 2 
-            push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
+          if set_data.length == 2
+            if dead_line.match(/\d{2}\/\d{2}/) != nil
+              push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
+            else  
+              push = "日付は〇〇/〇〇の形でいれてね！"
+            end
           else
-            push = "商品\n日付(mm/dd)\nをいれてね！\n日付は4桁だよ。"
+            push = "商品\n日付(mm/dd)\nと改行していれてね！\n日付は4桁だよ。"
           end
           # テキスト以外（画像等）のメッセージが送られた場合
         else

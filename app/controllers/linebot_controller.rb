@@ -25,7 +25,7 @@ class LinebotController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           # event.message['text']：ユーザーから送られたメッセージ
           input = event.message['text']
-          set_date = input.split("\n")
+          set_data = input.split(" ")
           food = set_data[0]
           dead_line = set_data[1]
           if set_data.length == 2 && dead_line.match(/\d{2}\/\d{2}/ != nil)

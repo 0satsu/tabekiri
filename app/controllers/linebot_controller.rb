@@ -35,7 +35,7 @@ class LinebotController < ApplicationController
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
-              push = "#{food}は#{date.strftime("%m/%d").gsub("0","")}までだね！\n覚えたよ〜"
+              push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
             else  
               push = "日付は「〇/〇」の形でいれてね！"
             end

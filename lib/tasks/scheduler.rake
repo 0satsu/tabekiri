@@ -8,20 +8,27 @@ namespace :scheduler do
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
     #アクションのための条件指定
-      @remind = Remind.find_by(date: Date.today.next_day(5))
-      if @remind != nil
-        date = @remind.date.strftime("%m/%d").gsub("0","")
-        push = "おはよう！\n#{@remind.food}の賞味期限が\n5日後の#{date}になったよ。\n残さず食べてあげてー！"
+    @reminds = Remind.where(date: Date.today.next_day(5))
+    if @reminds != nil
+      @reminds.each do |remind|
+        date = remind.date.strftime("%m/%d")  #.gsub("0","")
+        push = "おはよう！\n#{remind.food}の賞味期限が\n5日後の【#{date}】になったよ。\n残さず食べてあげてー！"
         # メッセージ送信のためにユーザーを取得
+        user_id = remind.user.line_id
+        message = {
+          type: 'text',
+          text: push
+        }
+        response = client.push_message(user_id, message)
       end
-
-    user_id = @remind.user.line_id
-    message = {
-      type: 'text',
-      text: push
-    }
-    response = client.push_message(user_id, message)
+    end
     "OK"
+  end
+  task :refresh => :environment do
+    require 'line/bot'
+    require 'date'
+    @reminds = Remind.where("date < ?", Date.today)
+    @reminds.destroy_all
   end
 end
 

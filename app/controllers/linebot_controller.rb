@@ -26,21 +26,34 @@ class LinebotController < ApplicationController
           # event.message['text']：ユーザーから送られたメッセージ
           input = event.message['text']
           set_data = input.split("\n")
-          food = set_data[0]
-          dead_line = set_data[1]
+          line_id = event['source']['userId']
+          user = User.find_by(line_id: line_id)
           if set_data.length == 2
-            if dead_line.match(/\d{1,2}\/\d{1,2}/) != nil
-              line_id = event['source']['userId']
-              user = User.find_by(line_id: line_id)
+            if set_data[1].match(/\d{1,2}\/\d{1,2}/) != nil
+              food = set_data[0]
+              dead_line = set_data[1]
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
               push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
-            else  
+            elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして).*/) != nil
+              food = set_data[0]
+              Remind.find_by(food: food).destroy
+              push = "#{food}を削除したよ！"
+            elsif set_data[1].match(/.*\d.*/) != nil
               push = "日付は「〇/〇」の形でいれてね！"
+            else
+              push = "ごめんね、登録できなかったみたい><\nもういちど試してみてね。"
             end
+          elsif input.match(/.*(全部|ぜんぶ|一覧|いちらん).*/) != nil
+            index = ""
+            @index = Remind.where(user_id: user.id).order("date ASC")
+            @index.each do |remind|
+              index += "\n#{remind.food}:  #{remind.date.strftime("%m/%d")}"
+            end
+            push = "登録一覧だよ〜#{index}"
           else
-            push = "商品\n日付(〇〇/▲▲)\nと改行していれてね！"
+            push = "【登録】\n商品\n日付(〇〇/▲▲)\n【削除】\n商品\n「削除」or「消して」\nと改行していれてね！\n【一覧】\n「全部」or「一覧」って入れるとみれるよ♪"
           end
           # テキスト以外（画像等）のメッセージが送られた場合
         else

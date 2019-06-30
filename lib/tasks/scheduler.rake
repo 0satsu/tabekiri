@@ -29,6 +29,25 @@ namespace :scheduler do
     require 'date'
     @reminds = Remind.where("date < ?", Date.today)
     @reminds.destroy_all
+    "OK"
+  end
+  task :theday => :environment do
+    require 'line/bot'
+    require 'date'
+    @reminds = Remind.where(date: Date.today)
+    if @reminds != nil
+      @reminds.each do |remind|
+        push = "あわわ...！\n#{remind.food}の賞味期限が今日までみたい！\nまだ残ってたりしないかな？\n確認してみてねー！"
+        # メッセージ送信のためにユーザーを取得
+        user_id = remind.user.line_id
+        message = {
+          type: 'text',
+          text: push
+        }
+        response = client.push_message(user_id, message)
+      end
+    end
+    "OK"
   end
 end
 

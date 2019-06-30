@@ -34,6 +34,10 @@ namespace :scheduler do
   task :theday => :environment do
     require 'line/bot'
     require 'date'
+    client ||= Line::Bot::Client.new { |config|
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+    }
     @reminds = Remind.where(date: Date.today)
     if @reminds != nil
       @reminds.each do |remind|

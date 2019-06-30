@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_28_062138) do
+ActiveRecord::Schema.define(version: 2019_06_30_052838) do
 
   create_table "reminds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "food"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2019_06_28_062138) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "before"
     t.index ["user_id"], name: "index_reminds_on_user_id"
   end
 

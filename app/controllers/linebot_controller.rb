@@ -35,7 +35,7 @@ class LinebotController < ApplicationController
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
               @post = Remind.create(food: food, date: date, user_id: user.id)
-              push = "#{food}は#{dead_line}までだね！\n覚えたよ〜"
+              push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、何日後にお知らせする？\n数字をいれてね！"
             elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして).*/) != nil
               food = set_data[0]
               Remind.find_by(food: food).destroy
@@ -45,6 +45,12 @@ class LinebotController < ApplicationController
             else
               push = "ごめんね、登録できなかったみたい><\nもういちど試してみてね。"
             end
+          elsif set_data.length ==1 && set_data[0].match(/\d/) != nil
+            @last_remind = user.reminds.last
+            before = input.to_i
+            @last_remind.update(before: before)
+            day = @last_remind.date - before
+            push = "#{before}日前の#{day.strftime("%m/%d")}だね！\n了解♪"
           elsif input.match(/.*(全部|ぜんぶ|一覧|いちらん).*/) != nil
             index = ""
             @index = Remind.where(user_id: user.id).order("date ASC")
@@ -89,8 +95,8 @@ class LinebotController < ApplicationController
   private
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret =  ENV["LINE_CHANNEL_SECRET"]  
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"] 
+      config.channel_secret =  ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
   end
 

@@ -8,9 +8,9 @@ namespace :scheduler do
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
     #アクションのための条件指定
-    @reminds = Remind.where(date: Date.today.next_day(5))
-    if @reminds != nil
-      @reminds.each do |remind|
+    @reminds = Remind.all
+    @reminds.each do |remind|
+      if remind.date == (Date.today + remind.before)
         date = remind.date.strftime("%m/%d")  #.gsub("0","")
         push = "おはよう！\n#{remind.food}の賞味期限が\n5日後の【#{date}】になったよ。\n残さず食べてあげてー！"
         # メッセージ送信のためにユーザーを取得

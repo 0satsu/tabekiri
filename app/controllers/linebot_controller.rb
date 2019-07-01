@@ -34,8 +34,13 @@ class LinebotController < ApplicationController
               dead_line = set_data[1]
               dead_line2 = dead_line.split("/").map(&:to_i)
               date = Date.new(2019,dead_line2[0],dead_line2[1])
-              @post = Remind.create(food: food, date: date, user_id: user.id)
-              push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、何日後にお知らせする？\n数字をいれてね！"
+              @post = Remind.new(food: food, date: date, user_id: user.id)
+              if user.reminds.find_by(food: @post.food) == nil
+                @post.save
+                push = "#{food}は#{dead_line}までだね！\\n覚えたよ〜\n当日と、何日後にお知らせする？\n数字をいれてね！"
+              else
+                push = "同じ品目がもうあるみたい！\n 一覧を確認してみてね。"
+              end
             elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして).*/) != nil
               food = set_data[0]
               Remind.find_by(food: food).destroy

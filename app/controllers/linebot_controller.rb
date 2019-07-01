@@ -45,12 +45,12 @@ class LinebotController < ApplicationController
             else
               push = "ごめんね、登録できなかったみたい><\nもういちど試してみてね。"
             end
-          elsif set_data.length ==1 && set_data[0].match(/\d/) != nil
+          elsif input.match(/\d/) != nil
             @last_remind = user.reminds.last
             before = input.to_i
             @last_remind.update(before: before)
             day = @last_remind.date - before
-            push = "#{before}日前の#{day.strftime("%m/%d")}だね！\n了解♪"
+            push = "#{before}日前の#{day.strftime("%m/%d")}だね。\n了解♪"
           elsif input.match(/.*(全部|ぜんぶ|一覧|いちらん).*/) != nil
             index = ""
             @index = Remind.where(user_id: user.id).order("date ASC")

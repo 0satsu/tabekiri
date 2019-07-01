@@ -39,7 +39,7 @@ class LinebotController < ApplicationController
                 @post.save
                 push = "#{food}は#{dead_line}までだね！\\n覚えたよ〜\n当日と、何日後にお知らせする？\n数字をいれてね！"
               else
-                push = "同じ品目がもうあるみたい！\n 一覧を確認してみてね。"
+                push = "もう同じ品目があるみたい！\n 一覧を確認してみてね。"
               end
             elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして).*/) != nil
               food = set_data[0]

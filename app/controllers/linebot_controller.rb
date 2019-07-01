@@ -48,7 +48,7 @@ class LinebotController < ApplicationController
             elsif set_data[1].match(/.*\d.*/) != nil
               push = "日付は「〇/〇」の形でいれてね！"
             else
-              push = "ごめんね、登録できなかったみたい><\nもういちど試してみてね。"
+              push = "ごめんね、登録できなかったみたい(>_<)\nもういちど試してみてね。"
             end
           elsif input.match(/\d/) != nil
             @last_remind = user.reminds.last

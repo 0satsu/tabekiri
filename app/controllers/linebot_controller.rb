@@ -88,10 +88,7 @@ class LinebotController < ApplicationController
         line_id = event['source']['userId']
         User.find_by(line_id: line_id).destroy
       end
-
-
     end
-
     # Don't forget to return a successful response
     "OK"
   end
@@ -100,9 +97,8 @@ class LinebotController < ApplicationController
   private
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret =  ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-    }
+      config.channel_secret = "02aadf741bad2100c0a0ddd60698c986"
+      config.channel_token = "KT7aBBeegjq29U+SE++Lcc0kvTojFwlXNkC8KUdUD1EzuSnq4FHwiriNyXKInvQjIbqm0YFXMXY+xTGNqGGLw2YPwLg14vL9ipGq7xZ7Cy6viSrPdqPY9J1KHMO55FzNwPAv8y2rpKPNQWOLzb1/MwdB04t89/1O/w1cDnyilFU="
   end
 
 end

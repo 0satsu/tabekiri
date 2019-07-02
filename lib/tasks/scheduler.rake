@@ -10,7 +10,7 @@ namespace :scheduler do
     #アクションのための条件指定
     @reminds = Remind.all
     @reminds.each do |remind|
-      if remind.date == (Date.tomorrow + remind.before)  #UTCのせいでtoday = 前日になるため
+      if remind.date == (Date.today + remind.before)  
         date = remind.date.strftime("%m/%d")  #.gsub("0","")
         push = "おはよう！\n#{remind.food}の賞味期限が\n5日後の【#{date}】になったよ。\n残さず食べてあげてー！"
         # メッセージ送信のためにユーザーを取得
@@ -27,7 +27,7 @@ namespace :scheduler do
   task :refresh => :environment do
     require 'line/bot'
     require 'date'
-    @reminds = Remind.where("date < ?", Date.tomorrow)  #UTCのせいでtoday = 前日になるため
+    @reminds = Remind.where("date < ?", Date.today) 
     @reminds.destroy_all
     "OK"
   end
@@ -38,7 +38,7 @@ namespace :scheduler do
       config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
-    @reminds = Remind.where(date: Date.tomorrow)
+    @reminds = Remind.where(date: Date.today)
     if @reminds != nil
       @reminds.each do |remind|
         push = "あわわ...！\n#{remind.food}の賞味期限が今日までみたい！\nまだ残ってたりしないかな？\n確認してみてねー！"
@@ -51,7 +51,7 @@ namespace :scheduler do
         response = client.push_message(user_id, message)
       end
     end
-    "OK"
+    "OK"s
   end
 end
 

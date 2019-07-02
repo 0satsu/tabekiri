@@ -158,7 +158,7 @@ class LinebotController < ApplicationController
   def make_part(recipe)
     title = recipe['recipeTitle']
     url = recipe['recipeUrl']
-    image = recipe['smallImageUrl'].first
+    image = recipe['foodImageUrl']
     {
       "type": "bubble",
       "hero": {

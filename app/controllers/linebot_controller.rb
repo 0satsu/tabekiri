@@ -136,10 +136,14 @@ class LinebotController < ApplicationController
     category_id = category[0]['categoryId'].to_s
     parent_id = category[0]['parentCategoryId']
     res =  RakutenWebService::Recipe.ranking("#{parent_id}-#{category_id}")
-    recipes = []
-    # 取得したデータを使いやすいように配列に格納し直す
-    recipes = res.map{|recipe| recipe}
-    make_reply_content(recipes)
+    unless res == nil
+      recipes = []
+      # 取得したデータを使いやすいように配列に格納し直す
+      recipes = res.map{|recipe| recipe}
+      make_reply_content(recipes)
+    else 
+      push = "ごめんね。レシピが見つからなかったよ〜(T ^ T)"
+    end
   end
 
   def make_reply_content(recipes)

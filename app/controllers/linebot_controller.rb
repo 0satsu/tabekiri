@@ -122,22 +122,24 @@ class LinebotController < ApplicationController
   end
 
   def search_and_create_message(input)
-    RakutenWebService.configuration do |c|
+    RakutenWebService.configure do |c|
       c.application_id = "1021639347585417175"
       c.affiliate_id = "18c0b761.464c0e88.18c0b762.382d9a07"
     end
     # 楽天の商品検索APIで画像がある商品の中で、入力値で検索して上から3件を取得する
     # 商品検索+ランキングでの取得はできないため標準の並び順で上から3件取得する
-    category = RakutenWebService::Recipe::Category.instance_variable_set(:@categories, nil)
-    binding.pry
-    res =  RakutenWebService::Recipe.ranking(10)
-    items = []
+    categories = RakutenWebService::Recipe.medium_categories #[配列]
+    category = categories.select {|category| category['categoryName'] == input}
+    category_id = category[0]['categoryId'].to_s
+    parent_id = category[0]['parentCategoryId']
+    res =  RakutenWebService::Recipe.ranking("#{parent_id}-#{category_id}")
+    recipes = []
     # 取得したデータを使いやすいように配列に格納し直す
-    items = res.map{|item| item}
-    make_reply_content(items)
+    recipes = res.map{|recipe| recipe}
+    make_reply_content(recipes)
   end
 
-  def make_reply_content(items)
+  def make_reply_content(recipes)
     {
       "type": 'flex',
       "altText": 'This is a Flex Message',
@@ -145,18 +147,18 @@ class LinebotController < ApplicationController
       {
         "type": 'carousel',
         "contents": [
-          make_part(items[0]),
-          make_part(items[1]),
-          make_part(items[2])
+          make_part(recipes[0]),
+          make_part(recipes[1]),
+          make_part(recipes[2])
         ]
       }
     }
   end
 
-  def make_part(item)
-    title = item['recipeTitle']
-    url = item['recipeUrl']
-    image = item['smallImageUrl'].first
+  def make_part(recipe)
+    title = recipe['recipeTitle']
+    url = recipe['recipeUrl']
+    image = recipe['smallImageUrl'].first
     {
       "type": "bubble",
       "hero": {

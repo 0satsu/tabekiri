@@ -78,16 +78,16 @@ class LinebotController < ApplicationController
               push = "キャンセルしたよ！"
             end
           elsif input == "賞味期限を登録する"
-            push = "商品\n日付(〇〇/▲▲)\nと改行して入れてね！"
+            push = "「商品」\n「日付(〇〇/▲▲)」\nと改行して入れてね！"
           elsif input == "登録削除する"
-            push = "商品\n削除/消して\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n全部/ぜんぶ\nっていれてね！"
+            push = "「商品」\n「削除/消して」\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n「全部/ぜんぶ」\nっていれてね！"
           elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
             push = "材料を入力してね！\n(例: 「にんじん」)"
           elsif user.last_message.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
             messages = search_and_create_message(input)
             client.reply_message(event['replyToken'], messages)
           else
-            push = "【登録】\n商品\n日付(〇〇/▲▲)\n【削除】\n商品\n削除/消して\nと改行していれてね！\n【一覧】\n全部/一覧\nって入れるとみれるよ♪"
+            push = "【登録】\n「商品」\n「日付(〇〇/▲▲)」\n【削除】\n「商品」\n「削除/消して」\nと改行していれてね！\n【一覧】\n「全部/一覧」\nって入れるとみれるよ♪"
           end
           user.update(last_message: input)
         # テキスト以外（画像等）のメッセージが送られた場合

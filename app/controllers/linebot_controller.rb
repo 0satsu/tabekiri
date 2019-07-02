@@ -85,7 +85,7 @@ class LinebotController < ApplicationController
           else
             push = "【登録】\n商品\n日付(〇〇/▲▲)\n【削除】\n商品\n「削除」or「消して」\nと改行していれてね！\n【一覧】\n「全部」or「一覧」って入れるとみれるよ♪"
           end
-          user.update(last_message: input)
+        user.update(last_message: input)
         # テキスト以外（画像等）のメッセージが送られた場合
         else
           push = "テキスト以外はわからないよ〜(；；)"

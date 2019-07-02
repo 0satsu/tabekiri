@@ -77,6 +77,10 @@ class LinebotController < ApplicationController
             else input.match(/いいえ/)
               push = "キャンセルしたよ！"
             end
+          elsif input == "賞味期限を登録する"
+            push = "商品\n日付(〇〇/▲▲)\nと改行して入れてね！"
+          elsif input == "登録削除する"
+            push = "商品\n「削除」or「消して」\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n「全部」or「ぜんぶ」\nっていれてね！"
           elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
             push = "材料を入力してね！\n(例: 「にんじん」)"
           elsif user.last_message.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil

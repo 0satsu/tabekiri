@@ -78,7 +78,7 @@ class LinebotController < ApplicationController
               push = "キャンセルしたよ！"
             end
           elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
-            push = "材料を入力してね！\n(例: 「にんじん　じゃがいも」)"
+            push = "材料を入力してね！\n(例: 「にんじん」)"
           elsif user.last_message.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
             messages = search_and_create_message(input)
             client.reply_message(event['replyToken'], messages)

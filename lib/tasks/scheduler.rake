@@ -4,8 +4,8 @@ namespace :scheduler do
     require 'line/bot'
     require 'date'
     client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = "02aadf741bad2100c0a0ddd60698c986"
-      config.channel_token = "KT7aBBeegjq29U+SE++Lcc0kvTojFwlXNkC8KUdUD1EzuSnq4FHwiriNyXKInvQjIbqm0YFXMXY+xTGNqGGLw2YPwLg14vL9ipGq7xZ7Cy6viSrPdqPY9J1KHMO55FzNwPAv8y2rpKPNQWOLzb1/MwdB04t89/1O/w1cDnyilFU="
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
     #アクションのための条件指定
     @reminds = Remind.all
@@ -35,8 +35,8 @@ namespace :scheduler do
     require 'line/bot'
     require 'date'
     client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = "02aadf741bad2100c0a0ddd60698c986"
-      config.channel_token = "KT7aBBeegjq29U+SE++Lcc0kvTojFwlXNkC8KUdUD1EzuSnq4FHwiriNyXKInvQjIbqm0YFXMXY+xTGNqGGLw2YPwLg14vL9ipGq7xZ7Cy6viSrPdqPY9J1KHMO55FzNwPAv8y2rpKPNQWOLzb1/MwdB04t89/1O/w1cDnyilFU="
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
     @reminds = Remind.where(date: Date.tomorrow)
     if @reminds != nil

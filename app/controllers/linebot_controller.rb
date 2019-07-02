@@ -119,7 +119,7 @@ class LinebotController < ApplicationController
   private
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret =  ENV["LINE_CHANNEL_SECRET"]
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
   end
@@ -133,16 +133,19 @@ class LinebotController < ApplicationController
     # 商品検索+ランキングでの取得はできないため標準の並び順で上から3件取得する
     categories = RakutenWebService::Recipe.medium_categories #[配列]
     category = categories.select {|category| category['categoryName'] == input}
-    category_id = category[0]['categoryId'].to_s
-    parent_id = category[0]['parentCategoryId']
-    res =  RakutenWebService::Recipe.ranking("#{parent_id}-#{category_id}")
-    unless res == nil
+    if category != []
+      category_id = category[0]['categoryId'].to_s
+      parent_id = category[0]['parentCategoryId']
+      res =  RakutenWebService::Recipe.ranking("#{parent_id}-#{category_id}")
       recipes = []
       # 取得したデータを使いやすいように配列に格納し直す
       recipes = res.map{|recipe| recipe}
       make_reply_content(recipes)
     else 
-      push = "ごめんね。レシピが見つからなかったよ〜(T ^ T)"
+      {
+        type: 'text',
+        text: "ごめんね、レシピが見つからなかったよ〜（；＿；）"
+      }
     end
   end
 

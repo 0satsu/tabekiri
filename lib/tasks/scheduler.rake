@@ -27,7 +27,7 @@ namespace :scheduler do
   task :refresh => :environment do
     require 'line/bot'
     require 'date'
-    @reminds = Remind.where("date < ?", Date.today) 
+    @reminds = Remind.where("date < ?", Date.tomorrow) 
     @reminds.destroy_all
     "OK"
   end

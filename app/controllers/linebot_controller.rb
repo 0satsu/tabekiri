@@ -106,7 +106,7 @@ class LinebotController < ApplicationController
       when Line::Bot::Event::Follow
         # 登録したユーザーのidをユーザーテーブルに格納
         line_id = event['source']['userId']
-        User.create(line_id: line_id)
+        User.create(line_id: line_id,last_message: "")
         # LINEお友達解除された場合（機能③）
       when Line::Bot::Event::Unfollow
         # お友達解除したユーザーのデータをユーザーテーブルから削除

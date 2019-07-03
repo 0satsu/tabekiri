@@ -51,7 +51,7 @@ namespace :scheduler do
         response = client.push_message(user_id, message)
       end
     end
-    "OK"
+    "OK" 
   end
 end
 

@@ -33,7 +33,9 @@ class LinebotController < ApplicationController
               food = set_data[0]
               dead_line = set_data[1]
               dead_line2 = dead_line.split("/").map(&:to_i)
-              date = Date.new(2019,dead_line2[0],dead_line2[1])
+              today = Date.today
+              date = Date.new(today.year,dead_line2[0],dead_line2[1])
+              date = date.next_year(1) if date < today #来年くりあげ
               @post = Remind.new(food: food, date: date, user_id: user.id)
               if user.reminds.find_by(food: @post.food) == nil
                 @post.save
@@ -79,7 +81,7 @@ class LinebotController < ApplicationController
             end
           elsif input == "賞味期限を登録する"
             push = "「商品」\n「日付(〇〇/▲▲)」\nと改行して入れてね！"
-          elsif input == "登録削除する"
+          elsif input == "登録を削除する"
             push = "「商品」\n「削除/消して」\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n「全部/ぜんぶ」\nっていれてね！"
           elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
             push = "材料を入力してね！\n(例: 「にんじん」)"

@@ -41,7 +41,7 @@ namespace :scheduler do
     @reminds = Remind.where(date: Date.today)
     if @reminds != nil
       @reminds.each do |remind|
-        push = "あわわ...！\n#{remind.food}の賞味期限が今日までみたい！\nまだ残ってたりしないかな？\n確認してみてねー！"
+        push = "あわわ...！\n#{remind.food}の賞味期限が今日までみたい😣💦\nまだ残ってたりしないかな？\n確認してみてねー！"
         # メッセージ送信のためにユーザーを取得
         user_id = remind.user.line_id
         message = {

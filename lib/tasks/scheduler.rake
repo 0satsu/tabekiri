@@ -10,9 +10,9 @@ namespace :scheduler do
     #アクションのための条件指定
     @reminds = Remind.all
     @reminds.each do |remind|
-      if remind.date == (Date.today + remind.before)  
+      if remind.date == (Date.today + remind.before) && remind.before != 0
         date = remind.date.strftime("%m/%d")  #.gsub("0","")
-        push = "おはよう！\n#{remind.food}の賞味期限が\n5日後の【#{date}】になったよ。\n残さず食べてあげてー！"
+        push = "おはよう！\n#{remind.food}の賞味期限が\n#{before}日後の【#{date}】になったよ。\n残さず食べてあげてー！"
         # メッセージ送信のためにユーザーを取得
         user_id = remind.user.line_id
         message = {

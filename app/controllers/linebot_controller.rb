@@ -36,7 +36,7 @@ class LinebotController < ApplicationController
               today = Date.today
               date = Date.new(today.year,dead_line2[0],dead_line2[1])
               date = date.next_year(1) if date < today #来年くりあげ
-              @post = Remind.new(food: food, date: date, user_id: user.id)
+              @post = Remind.new(food: food, date: date, user_id: user.id, before: 0)
               if user.reminds.find_by(food: @post.food) == nil
                 @post.save
                 push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、その何日前にお知らせする？\n数字をいれてね！"

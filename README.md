@@ -26,9 +26,9 @@
 
 
 # 環境
-ruby 2.5.1
-rails 5.2.3
-herokuにデプロイ中
+  - ruby 2.5.1
+  - rails 5.2.3
+  - herokuにデプロイ中
 
 
 # 工夫した点

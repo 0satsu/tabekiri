@@ -5,6 +5,7 @@
 
 
 ## 入力画面
+
 ![tabekiri_1](https://user-images.githubusercontent.com/51403845/63081599-f6dd6600-bf7e-11e9-8e59-a61aea837509.gif)
 ![tabekiri_2](https://user-images.githubusercontent.com/51403845/63081609-fd6bdd80-bf7e-11e9-95f8-0bf6598ef0ec.gif)
  - 賞味期限の登録
@@ -18,6 +19,7 @@
 
 
 ##リマインド画面
+
 ![tabekiri_3](https://user-images.githubusercontent.com/51403845/63081654-1b394280-bf7f-11e9-9c3c-1ee98f133cf2.gif)
  - 設定日時の朝9時にリマインドします。
 

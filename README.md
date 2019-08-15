@@ -1,4 +1,5 @@
-#「食べきりくん」とは
+# 「食べきりくん」とは
+
 賞味期限を登録すると、当日と設定日にリマインドするLINEbotです。
 ![pan](https://user-images.githubusercontent.com/51403845/63081689-3c019800-bf7f-11e9-8759-a9e778b5f066.png)
 <img width="207" alt="QR" src="https://user-images.githubusercontent.com/51403845/63081696-415ee280-bf7f-11e9-93b4-a3db345df183.png">

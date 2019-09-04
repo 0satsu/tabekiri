@@ -38,8 +38,11 @@ class LinebotController < ApplicationController
               date = date.next_year(1) if date < today #来年くりあげ
               @post = Remind.new(food: food, date: date, user_id: user.id, before: 0)
               if user.reminds.find_by(food: @post.food) == nil
-                @post.save
-                push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、その何日前にお知らせする？\n数字をいれてね！"
+                if @post.save
+                  push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、その何日前にお知らせする？\n数字をいれてね！"
+                elsif @post.errors.full_messages
+                  push = @post.errors.full_messages
+                end
               else
                 push = "もう同じ品目があるみたい(>_<)\n 一覧を確認してみて！\n登録するときは、前のを消してから登録してね。"
               end

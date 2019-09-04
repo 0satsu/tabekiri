@@ -25,73 +25,88 @@ class LinebotController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           # event.message['text']：ユーザーから送られたメッセージ
           input = event.message['text']
-          set_data = input.split("\n")
-          line_id = event['source']['userId']
-          user = User.find_by(line_id: line_id)
-          if set_data.length == 2
-            if set_data[1].match(/\d{1,2}\/\d{1,2}/) != nil
-              food = set_data[0]
-              dead_line = set_data[1]
-              dead_line2 = dead_line.split("/").map(&:to_i)
-              today = Date.today
-              date = Date.new(today.year,dead_line2[0],dead_line2[1])
-              date = date.next_year(1) if date < today #来年くりあげ
-              @post = Remind.new(food: food, date: date, user_id: user.id, before: 0)
-              if user.reminds.find_by(food: @post.food) == nil
-                @post.save
-                push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、その何日前にお知らせする？\n数字をいれてね！"
+          if input.length <= 150
+            set_data = input.split("\n")
+            line_id = event['source']['userId']
+            user = User.find_by(line_id: line_id)
+            if set_data.length == 2
+              if set_data[1].match(/\d{1,2}\/\d{1,2}/) != nil
+                food = set_data[0]
+                dead_line = set_data[1]
+                dead_line2 = dead_line.split("/").map(&:to_i)
+                if dead_line2.length == 2
+                  today = Date.today
+                  date = Date.new(today.year,dead_line2[0],dead_line2[1])
+                  date = date.next_year(1) if date < today #来年くりあげ
+                elsif dead_line2.length == 3
+                  date = Date.new(dead_line2[0],dead_line2[1],dead_line2[2])
+                else 
+                  dete = "error"
+                end
+                @post = Remind.new(food: food, date: date, user_id: user.id, before: 0)
+                if user.reminds.find_by(food: @post.food) == nil
+                  if @post.save
+                    push = "#{food}は#{dead_line}までだね！\n覚えたよ〜\n当日と、その何日前にお知らせする？\n数字をいれてね！"
+                  elsif food.length > 50
+                    push = "商品名は50字以内にしてね！"
+                  else
+                    push = "エラーが発生しました。。\n入力を確認して、もう一度ためしてみてね！"
+                  end
+                else
+                  push = "もう同じ品目があるみたい(>_<)\n 一覧を確認してみて！\n登録するときは、前のを消してから登録してね。"
+                end
+              elsif set_data[0].match(/(ぜんぶ|全部)/) != nil && set_data[1].match(/(消して|けして|削除|さくじょ|消去|しょうきょ)/)  != nil
+                push = "ほんとに全部けして大丈夫？\n 「はい/いいえ」で入れてね。"
+              elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして|消去|しょうきょ).*/) != nil
+                @food = Remind.find_by(food: set_data[0])
+                unless @food == nil 
+                  @food.destroy
+                  push = "#{@food.food}を削除したよ！"
+                else
+                  push = "「#{set_data[0]}」は保存されてないみたい。一覧で確認してね！"
+                end
+              elsif set_data[1].match(/.*\d.*/) != nil
+                push = "日付は「〇/〇」の形でいれてね！"
               else
-                push = "もう同じ品目があるみたい(>_<)\n 一覧を確認してみて！\n登録するときは、前のを消してから登録してね。"
+                push = "ごめんね、登録できなかったみたい(>_<)\nもういちど試してみてね。"
               end
-            elsif set_data[0].match(/(ぜんぶ|全部)/) != nil && set_data[1].match(/(消して|けして|削除|さくじょ|消去|しょうきょ)/)  != nil
-              push = "ほんとに全部けして大丈夫？\n 「はい/いいえ」で入れてね。"
-            elsif  set_data[1].match(/.*(削除|さくじょ|消して|けして|消去|しょうきょ).*/) != nil
-              @food = Remind.find_by(food: set_data[0])
-              unless @food == nil 
-                @food.destroy
-                push = "#{@food.food}を削除したよ！"
-              else
-                push = "「#{set_data[0]}」は保存されてないみたい。一覧で確認してね！"
+            elsif input.match(/\d/) != nil && user.last_message.match(/.*\d{1,2}\/\d{1,2}.*/)
+              @last_remind = user.reminds.last
+              before = input.to_i
+              @last_remind.update(before: before)
+              day = @last_remind.date - before
+              push = "#{before}日前の#{day.strftime("%m/%d")}だね。\n了解♪"
+            elsif input.match(/.*(全部|ぜんぶ|一覧|いちらん).*/) != nil
+              index = ""
+              @index = Remind.where(user_id: user.id).order("date ASC")
+              @index.each do |remind|
+                index += "\n#{remind.food}:  #{remind.date.strftime("%m/%d")}"
               end
-            elsif set_data[1].match(/.*\d.*/) != nil
-              push = "日付は「〇/〇」の形でいれてね！"
+              push = "登録一覧だよ〜#{index}"
+            elsif  user.last_message.match(/(全部|ぜんぶ)\R(けして|消して|削除|さくじょ|消去|しょうきょ)/)
+              if input.match(/はい/)
+                @reminds = user.reminds
+                @reminds.destroy_all unless @reminds == nil
+                push = "ぜんぶ消したよ！"
+              else input.match(/いいえ/)
+                push = "キャンセルしたよ！"
+              end
+            elsif input == "賞味期限を登録する"
+              push = "「商品」\n「日付(〇〇/▲▲)」\nと改行して入れてね！"
+            elsif input == "登録を削除する"
+              push = "「商品」\n「削除/消して」\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n「全部/ぜんぶ」\nっていれてね！"
+            elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
+              push = "材料を入力してね！\n(例: 「にんじん」)"
+            elsif user.last_message.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
+              messages = search_and_create_message(input)
+              client.reply_message(event['replyToken'], messages)
             else
-              push = "ごめんね、登録できなかったみたい(>_<)\nもういちど試してみてね。"
+              push = "【登録】\n「商品」\n「日付(〇〇/▲▲)」\n【削除】\n「商品」\n「削除/消して」\nと改行していれてね！\n【一覧】\n「全部/一覧」\nって入れるとみれるよ♪"
             end
-          elsif input.match(/\d/) != nil && user.last_message.match(/.*\d{1,2}\/\d{1,2}.*/)
-            @last_remind = user.reminds.last
-            before = input.to_i
-            @last_remind.update(before: before)
-            day = @last_remind.date - before
-            push = "#{before}日前の#{day.strftime("%m/%d")}だね。\n了解♪"
-          elsif input.match(/.*(全部|ぜんぶ|一覧|いちらん).*/) != nil
-            index = ""
-            @index = Remind.where(user_id: user.id).order("date ASC")
-            @index.each do |remind|
-              index += "\n#{remind.food}:  #{remind.date.strftime("%m/%d")}"
-            end
-            push = "登録一覧だよ〜#{index}"
-          elsif  user.last_message.match(/(全部|ぜんぶ)\R(けして|消して|削除|さくじょ|消去|しょうきょ)/)
-            if input.match(/はい/)
-              @reminds = user.reminds
-              @reminds.destroy_all unless @reminds == nil
-              push = "ぜんぶ消したよ！"
-            else input.match(/いいえ/)
-              push = "キャンセルしたよ！"
-            end
-          elsif input == "賞味期限を登録する"
-            push = "「商品」\n「日付(〇〇/▲▲)」\nと改行して入れてね！"
-          elsif input == "登録を削除する"
-            push = "「商品」\n「削除/消して」\nと改行していれてね！\n ぜんぶ消すときは、商品名に\n「全部/ぜんぶ」\nっていれてね！"
-          elsif input.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
-            push = "材料を入力してね！\n(例: 「にんじん」)"
-          elsif user.last_message.match(/.*(レシピ|レシピ検索|れしぴ).*/) != nil
-            messages = search_and_create_message(input)
-            client.reply_message(event['replyToken'], messages)
+            user.update(last_message: input)
           else
-            push = "【登録】\n「商品」\n「日付(〇〇/▲▲)」\n【削除】\n「商品」\n「削除/消して」\nと改行していれてね！\n【一覧】\n「全部/一覧」\nって入れるとみれるよ♪"
+            push = "入力は150字以内にしてね！"
           end
-          user.update(last_message: input)
         # テキスト以外（画像等）のメッセージが送られた場合
         else
           push = "テキスト以外はわからないよ〜(；；)"
@@ -125,8 +140,8 @@ class LinebotController < ApplicationController
   private
   def client
     @client ||= Line::Bot::Client.new { |config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+      config.channel_secret = "02aadf741bad2100c0a0ddd60698c986"
+      config.channel_token = "KT7aBBeegjq29U+SE++Lcc0kvTojFwlXNkC8KUdUD1EzuSnq4FHwiriNyXKInvQjIbqm0YFXMXY+xTGNqGGLw2YPwLg14vL9ipGq7xZ7Cy6viSrPdqPY9J1KHMO55FzNwPAv8y2rpKPNQWOLzb1/MwdB04t89/1O/w1cDnyilFU="
     }
   end
 
